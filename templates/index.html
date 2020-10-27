@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EnergyPlus Controller</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="jumbotron text-center">
+    <h1>EnergyPlus Controller</h1>
+    <p>Click the buttons to actuate the simulation</p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <div class="panel panel-default text-center">
+                <div class="panel-heading">Simulation State (Not working yet)</div>
+                <div class="panel-body">
+                    <button type="button" class="btn btn-secondary" onclick="getPaused()">Refresh Paused</button>
+                    <button type="button" class="btn btn-warning" onclick="setPaused()">Set Paused</button>
+                    <button type="button" class="btn btn-success" onclick="setUnpaused()">Set Unpaused</button>
+                    <p id="paused">(Click to refresh or set paused state)</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="panel panel-default text-center">
+                <div class="panel-heading">Simulation Outdoor Temperature</div>
+                <div class="panel-body">
+                    <label for="out_temp">Actuated Outdoor Temperature</label>
+                    <input id="out_temp" type="NUMBER" min="5" max="40" step="1" value="6" size="6">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function getPaused() {
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                document.getElementById("paused").innerHTML = JSON.parse(this.responseText).pause;
+            }
+        };
+        xhr.open("GET", "/api/pause/", true);
+        xhr.send();
+    }
+
+    function setTemp() {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/outdoor_temp/", true);
+        const body = JSON.stringify({"temperature": document.getElementById("out_temp").value})
+        xhr.send(body);
+    }
+
+    function setPaused() {
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                document.getElementById("paused").innerHTML = JSON.parse(this.responseText).pause;
+            }
+        };
+        xhr.open("POST", "/api/pause/", true);
+        const body = JSON.stringify({"state": true})
+        xhr.send(body);
+    }
+
+    function setUnpaused() {
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                document.getElementById("paused").innerHTML = JSON.parse(this.responseText).pause;
+            }
+        };
+        xhr.open("POST", "/api/pause/", true);
+        const body = JSON.stringify({"state": false})
+        xhr.send(body);
+    }
+
+    document.getElementById("out_temp").addEventListener('input', setTemp);
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+</body>
+</html>
