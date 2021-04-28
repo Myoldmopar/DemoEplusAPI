@@ -1,4 +1,4 @@
 django
-matplotlib
-numpy
+# matplotlib
+# numpy
 requests

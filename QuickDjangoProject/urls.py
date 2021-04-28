@@ -15,11 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from eplus_controller.views import home, pause, outdoor_temp
+from eplus_controller.views import home, start, outdoor_temp, get_data
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/pause/', pause),
+    path('api/start/', start),
+    path('api/data/', get_data),
     path('api/outdoor_temp/', outdoor_temp),
     path('', home)
 ]
+
