@@ -1,7 +1,6 @@
-import matplotlib.pyplot as plt
-import requests
 import sys
 
+import matplotlib.pyplot as plt
 
 hl, = plt.plot([], [], label="Outdoor Air Temp")
 h2, = plt.plot([], [], label="Zone Temperature")
@@ -20,6 +19,7 @@ oa_temp_handle = -1
 zone_temp_handle = -1
 count = 0
 plot_update_interval = 250  # time steps
+temp_update_interval = 3000  # time steps
 case_index_to_run = 2
 if case_index_to_run == 1:
     filename_to_run = '1ZoneEvapCooler.idf'
@@ -44,9 +44,16 @@ get_by_api = True
 
 
 def get_new_outdoor_air_temp() -> float:
-    response = requests.get('http://127.0.0.1:8000/api/outdoor_temp/')
-    data = response.json()
-    return data['outdoor_temp']
+    while True:
+        temp = input("Enter a new outdoor air temperature <int or float>: ")
+
+        try:
+            temp = float(temp)
+        except ValueError:
+            print("Input type was invalid. Input type must be a real number.")
+
+        if type(temp) is float:
+            return float(temp)
 
 
 def callback_function(s):
@@ -64,7 +71,10 @@ def callback_function(s):
     if a.exchange.warmup_flag(s):
         return
     if get_by_api:
-        a.exchange.set_actuator_value(s, oa_temp_actuator, get_new_outdoor_air_temp())
+
+        if count % temp_update_interval == 0:
+            a.exchange.set_actuator_value(s, oa_temp_actuator, get_new_outdoor_air_temp())
+
     count += 1
     x.append(count)
     oa_temp = a.exchange.get_variable_value(s, oa_temp_handle)
